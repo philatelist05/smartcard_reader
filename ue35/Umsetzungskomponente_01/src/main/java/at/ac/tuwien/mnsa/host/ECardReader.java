@@ -24,7 +24,7 @@ public class ECardReader {
 	private static final byte[] READ_BINARY = {(byte) 0x00, (byte) 0xB0, (byte) 0x82, (byte) 0x00, (byte) 0x00};
 	private static final CommandAPDU READ_BINARY_APDU = new CommandAPDU(READ_BINARY);
 
-	private final static String OK = "OMNIKEY CardMan 5x21 00 00";
+	private final static String terminalName = "NokiaTerminal.Terminal";
 
 	private final static String T_1 = "T=1";
 	private final static String T_0 = "T=0";
@@ -54,8 +54,7 @@ public class ECardReader {
 			logger.info("Reader: " + i.next().getName());
 		}
 
-		// Wichtig: Namen des Lesegeraetes anpassen.
-		CardTerminal c = ct.getTerminal(OK);
+		CardTerminal c = ct.getTerminal(terminalName);
 
 		if (c != null) {
 			logger.info("Terminal '" + c.getName() + "' fetched");

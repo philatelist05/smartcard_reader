@@ -6,8 +6,6 @@ import java.io.PrintWriter;
 import java.util.Enumeration;
 import javax.comm.CommPort;
 import javax.comm.CommPortIdentifier;
-import javax.comm.NoSuchPortException;
-import javax.comm.PortInUseException;
 import org.junit.Test;
 
 import static org.junit.Assert.*;

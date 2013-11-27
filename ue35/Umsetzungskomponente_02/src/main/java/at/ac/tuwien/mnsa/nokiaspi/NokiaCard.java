@@ -32,6 +32,7 @@ public class NokiaCard extends Card {
 	 */
 	@Override
 	public ATR getATR() {
+		//TODO: Implement
 		return atr;
 	}
 
@@ -86,7 +87,7 @@ public class NokiaCard extends Card {
 	}
 
 	public ResponseAPDU transmitCommand(CommandAPDU capdu) {
-
+		//TODO: Implement
 		System.out.println("Hier kommt ein Transmit Command");
 		return null;
 	}

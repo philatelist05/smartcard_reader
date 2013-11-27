@@ -20,18 +20,22 @@ public class NokiaChannel extends CardChannel {
 		this.channel = channel;
 	}
 
+	@Override
 	public Card getCard() {
 		return card;
 	}
 
+	@Override
 	public int getChannelNumber() {
 		return channel;
 	}
 
+	@Override
 	public ResponseAPDU transmit(CommandAPDU capdu) throws CardException {
 		return card.transmitCommand(capdu);
 	}
 
+	@Override
 	public int transmit(ByteBuffer bb, ByteBuffer bb1) throws CardException {
 		ResponseAPDU response = transmit(new CommandAPDU(bb));
 		byte[] binaryResponse = response.getBytes();
@@ -39,11 +43,9 @@ public class NokiaChannel extends CardChannel {
 		return binaryResponse.length;
 	}
 
-	/**
-	 * Do nothing.
-	 */
+	@Override
 	public void close() throws CardException {
-
+		//TODO: Implement
 	}
 
 }

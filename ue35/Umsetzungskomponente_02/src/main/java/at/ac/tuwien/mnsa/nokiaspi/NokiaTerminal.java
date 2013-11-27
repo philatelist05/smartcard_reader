@@ -9,10 +9,12 @@ public class NokiaTerminal extends CardTerminal {
 	public final static String NAME = "NokiaTerminal.Terminal";
 	private static NokiaCard card = null;
 
+	@Override
 	public String getName() {
 		return NAME;
 	}
 
+	@Override
 	public Card connect(String string) throws CardException {
 		if (card == null) {
 			card = new NokiaCard();
@@ -20,23 +22,19 @@ public class NokiaTerminal extends CardTerminal {
 		return card;
 	}
 
-	/**
-	 * Always returns true
-	 */
+	@Override
 	public boolean isCardPresent() throws CardException {
+		//TODO: Implement
 		return true;
 	}
 
-	/**
-	 * Immediately returns true
-	 */
+	@Override
 	public boolean waitForCardPresent(long l) throws CardException {
+		//TODO: Implement
 		return true;
 	}
 
-	/**
-	 * Immediately returns true
-	 */
+	@Override
 	public boolean waitForCardAbsent(long l) throws CardException {
 		return false;
 	}
