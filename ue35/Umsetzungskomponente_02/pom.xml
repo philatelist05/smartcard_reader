@@ -16,8 +16,21 @@
 	<packaging>jar</packaging>
     
 	<name>Umsetzungskomponente_02</name>
+	
+	<repositories>
+		<repository>
+			<id>project.local</id>
+			<name>project</name>
+			<url>file:${basedir}/lib</url>
+		</repository>
+	</repositories>
   
 	<dependencies>
+		<dependency>
+			<groupId>com.javacomm</groupId>
+			<artifactId>javacomm</artifactId>
+			<version>3.0</version>
+		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
