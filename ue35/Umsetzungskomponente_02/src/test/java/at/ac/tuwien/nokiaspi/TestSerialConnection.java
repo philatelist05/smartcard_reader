@@ -1,0 +1,24 @@
+package at.ac.tuwien.nokiaspi;
+
+import at.ac.tuwien.mnsa.comm.SerialConnection;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import org.junit.Test;
+
+import static org.junit.Assert.assertFalse;
+
+public class TestSerialConnection {
+	
+	@Test
+	public void testCommunication() throws Exception {
+		SerialConnection connection = SerialConnection.open();
+		BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+		String line = bufferedReader.readLine();
+		assertFalse(line.isEmpty());
+		
+		Thread.sleep(3000);
+		PrintWriter printWriter = new PrintWriter(connection.getOutputStream(), true);
+		printWriter.println("Hi!");
+	}
+}

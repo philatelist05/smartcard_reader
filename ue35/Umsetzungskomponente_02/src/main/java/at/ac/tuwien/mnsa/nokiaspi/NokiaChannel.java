@@ -1,5 +1,7 @@
 package at.ac.tuwien.mnsa.nokiaspi;
 
+import at.ac.tuwien.mnsa.comm.SerialConnection;
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import javax.smartcardio.Card;
 import javax.smartcardio.CardChannel;
@@ -12,12 +14,14 @@ import javax.smartcardio.ResponseAPDU;
  */
 public class NokiaChannel extends CardChannel {
 
-	private NokiaCard card;
-	private int channel;
+	private final NokiaCard card;
+	private final int channel;
+	private final SerialConnection connection;
 
-	public NokiaChannel(NokiaCard card, int channel) {
+	public NokiaChannel(NokiaCard card, int channel, SerialConnection connection) {
 		this.card = card;
 		this.channel = channel;
+		this.connection = connection;
 	}
 
 	@Override
@@ -45,7 +49,11 @@ public class NokiaChannel extends CardChannel {
 
 	@Override
 	public void close() throws CardException {
-		//TODO: Implement
+		try {
+			connection.close();
+		} catch (IOException ex) {
+			throw new CardException(ex);
+		}
 	}
 
 }

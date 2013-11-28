@@ -38,17 +38,4 @@ public class TestComm {
 		}
 		assertTrue(hasSerialPort);
 	}
-	
-	@Test
-	public void testCommunication() throws Exception{
-		CommPortIdentifier portIdentifier = CommPortIdentifier.getPortIdentifier(comPort);
-		CommPort port = portIdentifier.open("Junit", 3000);
-		BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(port.getInputStream()));
-		String line = bufferedReader.readLine();
-		assertFalse(line.isEmpty());
-		
-		Thread.sleep(3000);
-		PrintWriter printWriter = new PrintWriter(port.getOutputStream(), true);
-		printWriter.println("Hi!");
-	}
 }

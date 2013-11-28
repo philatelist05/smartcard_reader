@@ -1,5 +1,6 @@
 package at.ac.tuwien.mnsa.nokiaspi;
 
+import at.ac.tuwien.mnsa.comm.SerialConnection;
 import javax.smartcardio.ATR;
 import javax.smartcardio.Card;
 import javax.smartcardio.CardChannel;
@@ -16,15 +17,16 @@ public class NokiaCard extends Card {
 	private static final String T0_PROTOCOL = "T=0";
 	// default ATR - NXP JCOP 31/36K
 	private static final String DEFAULT_ATR = "3BFA1800008131FE454A434F5033315632333298";
-
+	
 	// ATR
-	private ATR atr;
+	private final ATR atr;
+	private final NokiaChannel basicChannel;
+	private final SerialConnection connection;
 
-	private NokiaChannel basicChannel;
-
-	public NokiaCard() {
+	public NokiaCard(SerialConnection connection) {
+		this.connection = connection;
 		atr = new ATR(DEFAULT_ATR.getBytes());
-		basicChannel = new NokiaChannel(this, 0);
+		basicChannel = new NokiaChannel(this, 0, connection);
 	}
 
 	/**

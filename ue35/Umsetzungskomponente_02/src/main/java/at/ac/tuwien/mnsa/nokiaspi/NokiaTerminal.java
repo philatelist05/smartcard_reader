@@ -1,5 +1,7 @@
 package at.ac.tuwien.mnsa.nokiaspi;
 
+import at.ac.tuwien.mnsa.comm.SerialConnection;
+import at.ac.tuwien.mnsa.comm.SerialConnectionException;
 import javax.smartcardio.Card;
 import javax.smartcardio.CardException;
 import javax.smartcardio.CardTerminal;
@@ -16,21 +18,24 @@ public class NokiaTerminal extends CardTerminal {
 
 	@Override
 	public Card connect(String string) throws CardException {
-		if (card == null) {
-			card = new NokiaCard();
+		try {
+			if (card == null) {
+				SerialConnection connection = SerialConnection.open();
+				card = new NokiaCard(connection);
+			}
+			return card;
+		} catch (SerialConnectionException ex) {
+			throw new CardException(ex);
 		}
-		return card;
 	}
 
 	@Override
 	public boolean isCardPresent() throws CardException {
-		//TODO: Implement
-		return true;
+		return SerialConnection.isPresent();
 	}
 
 	@Override
 	public boolean waitForCardPresent(long l) throws CardException {
-		//TODO: Implement
 		return true;
 	}
 
