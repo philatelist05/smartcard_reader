@@ -7,6 +7,7 @@ import at.ac.tuwien.mnsa.comm.SerialConnectionException;
 import at.ac.tuwien.mnsa.message.APDUMessage;
 import at.ac.tuwien.mnsa.message.CardPresentMessage;
 import at.ac.tuwien.mnsa.message.Message;
+import at.ac.tuwien.mnsa.message.MessageException;
 import at.ac.tuwien.mnsa.message.MessageFactory;
 import java.io.IOException;
 import javax.smartcardio.ATR;
@@ -41,7 +42,7 @@ public class NokiaCard extends Card {
 		try {
 			message = messageReader.read(new MessageFactory());
 			return new ATR(message.getPayload());
-		} catch (IOException ex) {
+		} catch (MessageException ex) {
 			logger.error("Unable to transmit getATR() command", ex);
 			return new ATR(new byte[]{});
 		}
@@ -86,7 +87,7 @@ public class NokiaCard extends Card {
 			messageWriter.write(new APDUMessage(requestData));
 			Message<byte[]> message = messageReader.read(new MessageFactory());
 			return new ResponseAPDU(message.getPayload());
-		} catch (IOException ex) {
+		} catch (MessageException ex) {
 			throw new CardException("Unable to transmit command " + capdu, ex);
 		}
 	}
@@ -96,7 +97,7 @@ public class NokiaCard extends Card {
 			messageWriter.write(new CardPresentMessage(true));
 			Message<Boolean> message = messageReader.read(new MessageFactory());
 			return message.getPayload();
-		} catch (IOException ex) {
+		} catch (MessageException ex) {
 			logger.error("Unable to send isPresent message.", ex);
 			return false;
 		}

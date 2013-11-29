@@ -16,9 +16,13 @@ public class MessageWriter {
 		this.outputStream = outputStream;
 	}
 
-	public <T extends Serializable> void write(Message<T> message) throws IOException {
-		writeHeader(message);
-		writePayload(message);
+	public <T extends Serializable> void write(Message<T> message) throws MessageException {
+		try {
+			writeHeader(message);
+			writePayload(message);
+		} catch (IOException ex) {
+			throw new MessageException("Unable to write message", ex);
+		}
 	}
 
 	private <T extends Serializable> void writeHeader(Message<T> message) throws IOException {

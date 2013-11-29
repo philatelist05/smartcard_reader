@@ -13,7 +13,7 @@ public class MessageFactory {
 			case 3:
 				return (Message<T>) new CardPresentMessage((payload[0] & 0x01) != 0);
 			default:
-				throw new AssertionError();
+				throw new IllegalStateException("Message type " + type + " not supported yet");
 		}
 	}
 }
