@@ -1,18 +1,20 @@
 package at.ac.tuwien.mnsa.message;
 
-public class CardPresentMessage implements Message {
+public class CardPresentMessage implements Message<Boolean> {
 	
-	private final byte[] payload;
+	private final boolean payload;
 
-	public CardPresentMessage(byte[] payload) {
+	public CardPresentMessage(boolean payload) {
 		this.payload = payload;
 	}
 
+	@Override
 	public byte getIdentifier() {
 		return 3;
 	}
 
-	public byte[] getPayload() {
+	@Override
+	public Boolean getPayload() {
 		return payload;
 	}
 	

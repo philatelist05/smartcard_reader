@@ -1,15 +1,17 @@
 package at.ac.tuwien.mnsa.message;
 
+import java.io.Serializable;
+
 public class MessageFactory {
 
-	public Message create(int type, byte[] payload) {
+	public <T extends Serializable> Message<T> create(int type, byte[] payload) {
 		switch (type) {
 			case 1:
-				return new ATRMessage(payload);
+				return (Message<T>) new ATRMessage(payload);
 			case 2:
-				return new APDUMessage(payload);
+				return (Message<T>) new APDUMessage(payload);
 			case 3:
-				return new CardPresentMessage(payload);
+				return (Message<T>) new CardPresentMessage((payload[0] & 0x01) != 0);
 			default:
 				throw new AssertionError();
 		}

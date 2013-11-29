@@ -1,6 +1,6 @@
 package at.ac.tuwien.mnsa.message;
 
-public class ATRMessage implements Message {
+public class ATRMessage implements Message<byte[]> {
 	
 	private final byte[] payload;
 
@@ -8,10 +8,12 @@ public class ATRMessage implements Message {
 		this.payload = payload;
 	}
 
+	@Override
 	public byte getIdentifier() {
 		return 1;
 	}
 
+	@Override
 	public byte[] getPayload() {
 		return payload;
 	}

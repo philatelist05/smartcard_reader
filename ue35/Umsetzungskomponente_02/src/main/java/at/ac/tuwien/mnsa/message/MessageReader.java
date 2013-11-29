@@ -2,6 +2,7 @@ package at.ac.tuwien.mnsa.message;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
@@ -13,7 +14,7 @@ public class MessageReader {
 		this.inputStream = inputStream;
 	}
 
-	public Message read(MessageFactory factory) throws IOException {
+	public <T extends Serializable> Message<T> read(MessageFactory factory) throws IOException {
 		byte[] header = new byte[4];
 		inputStream.read(header);
 		byte mty = header[0];

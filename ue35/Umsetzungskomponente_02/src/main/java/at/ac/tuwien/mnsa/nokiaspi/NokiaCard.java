@@ -37,7 +37,7 @@ public class NokiaCard extends Card {
 
 	@Override
 	public ATR getATR() {
-		Message message;
+		Message<byte[]> message;
 		try {
 			message = messageReader.read(new MessageFactory());
 			return new ATR(message.getPayload());
@@ -84,7 +84,7 @@ public class NokiaCard extends Card {
 		try {
 			byte[] requestData = capdu.getBytes();
 			messageWriter.write(new APDUMessage(requestData));
-			Message message = messageReader.read(new MessageFactory());
+			Message<byte[]> message = messageReader.read(new MessageFactory());
 			return new ResponseAPDU(message.getPayload());
 		} catch (IOException ex) {
 			throw new CardException("Unable to transmit command " + capdu, ex);
@@ -93,10 +93,9 @@ public class NokiaCard extends Card {
 
 	public boolean isPresent() {
 		try {
-			messageWriter.write(new CardPresentMessage(new byte[]{}));
-			Message message = messageReader.read(new MessageFactory());
-			byte[] payload = message.getPayload();
-			return (payload[0] & 0x01) != 0;
+			messageWriter.write(new CardPresentMessage(true));
+			Message<Boolean> message = messageReader.read(new MessageFactory());
+			return message.getPayload();
 		} catch (IOException ex) {
 			logger.error("Unable to send isPresent message.", ex);
 			return false;
