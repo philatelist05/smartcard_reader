@@ -1,6 +1,10 @@
 package at.ac.tuwien.mnsa.nokiaspi;
 
+import at.ac.tuwien.mnsa.comm.MessageReader;
+import at.ac.tuwien.mnsa.comm.MessageWriter;
 import at.ac.tuwien.mnsa.comm.SerialConnection;
+import at.ac.tuwien.mnsa.comm.SerialConnectionException;
+import java.io.IOException;
 import javax.smartcardio.ATR;
 import javax.smartcardio.Card;
 import javax.smartcardio.CardChannel;
@@ -8,39 +12,29 @@ import javax.smartcardio.CardException;
 import javax.smartcardio.CommandAPDU;
 import javax.smartcardio.ResponseAPDU;
 
-/**
- * Card implementation class.
- */
 public class NokiaCard extends Card {
 
-	// default protocol
 	private static final String T0_PROTOCOL = "T=0";
-	// default ATR - NXP JCOP 31/36K
-	private static final String DEFAULT_ATR = "3BFA1800008131FE454A434F5033315632333298";
-	
-	// ATR
-	private final ATR atr;
 	private final NokiaChannel basicChannel;
-	private final SerialConnection connection;
+	private final MessageWriter messageWriter;
+	private final MessageReader messageReader;
 
-	public NokiaCard(SerialConnection connection) {
-		this.connection = connection;
-		atr = new ATR(DEFAULT_ATR.getBytes());
-		basicChannel = new NokiaChannel(this, 0, connection);
+	public NokiaCard(SerialConnection connection) throws SerialConnectionException {
+		try {
+			basicChannel = new NokiaChannel(this, 0, connection);
+			messageWriter = new MessageWriter(connection.getOutputStream());
+			messageReader = new MessageReader(connection.getInputStream());
+		} catch (IOException ex) {
+			throw new SerialConnectionException("Can not get Outputstream from connection", ex);
+		}
 	}
 
-	/**
-	 * Returns ATR configured by system property
-	 */
 	@Override
 	public ATR getATR() {
-		//TODO: Implement
-		return atr;
+		byte[] atrData = messageReader.readATR();
+		return new ATR(atrData);
 	}
 
-	/**
-	 * Always returns T=0.
-	 */
 	@Override
 	public String getProtocol() {
 		return T0_PROTOCOL;
@@ -51,26 +45,15 @@ public class NokiaCard extends Card {
 		return basicChannel;
 	}
 
-	/**
-	 * Always returns basic channel with id = 0
-	 *
-	 * @throws CardException
-	 */
 	@Override
 	public CardChannel openLogicalChannel() throws CardException {
 		return basicChannel;
 	}
 
-	/**
-	 * Do nothing.
-	 */
 	@Override
 	public void beginExclusive() throws CardException {
 	}
 
-	/**
-	 * Do nothing.
-	 */
 	@Override
 	public void endExclusive() throws CardException {
 	}
@@ -81,17 +64,18 @@ public class NokiaCard extends Card {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
-	/**
-	 * Do nothing.
-	 */
 	@Override
 	public void disconnect(boolean bln) throws CardException {
 	}
 
 	public ResponseAPDU transmitCommand(CommandAPDU capdu) {
-		//TODO: Implement
-		System.out.println("Hier kommt ein Transmit Command");
-		return null;
+		byte[] requestData = capdu.getBytes();
+		messageWriter.writeAPDU(requestData);
+		byte[] responseData = messageReader.readAPDU();
+		return new ResponseAPDU(responseData);
 	}
 
+	public boolean isPresent() {
+		return messageReader.isCardPresent();
+	}
 }

@@ -10,7 +10,7 @@ import static org.junit.Assert.assertFalse;
 
 public class TestSerialConnection {
 	
-	@Test
+	@Test(timeout = 5000L)
 	public void testCommunication() throws Exception {
 		SerialConnection connection = SerialConnection.open();
 		BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(connection.getInputStream()));

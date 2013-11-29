@@ -6,13 +6,11 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Enumeration;
 import javax.comm.CommPortIdentifier;
 import javax.comm.NoSuchPortException;
 import javax.comm.PortInUseException;
 import javax.comm.SerialPort;
 import javax.comm.UnsupportedCommOperationException;
-import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
 
@@ -60,22 +58,6 @@ public class SerialConnection implements Closeable {
 		} catch (ConfigurationException e) {
 			throw new SerialConnectionException("Failed to load properties ", e);
 		}
-	}
-
-	public static boolean isPresent() {
-		try {
-			SerialConnectionProperties connectionProperties = new SerialConnectionProperties();
-			Enumeration portIdentifiers = CommPortIdentifier.getPortIdentifiers();
-			while (portIdentifiers.hasMoreElements()) {
-				CommPortIdentifier portIdentifier = (CommPortIdentifier) portIdentifiers.nextElement();
-				if (portIdentifier.getName().equals(connectionProperties.portString)) {
-					return true;
-				}
-			}
-		} catch (ConfigurationException ex) {
-			return false;
-		}
-		return false;
 	}
 
 	public InputStream getInputStream() throws IOException {

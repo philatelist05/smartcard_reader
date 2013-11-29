@@ -10,7 +10,7 @@ public class NokiaTerminal extends CardTerminal {
 
 	public final static String NAME = "NokiaTerminal.Terminal";
 	private static NokiaCard card = null;
-
+	
 	@Override
 	public String getName() {
 		return NAME;
@@ -31,7 +31,7 @@ public class NokiaTerminal extends CardTerminal {
 
 	@Override
 	public boolean isCardPresent() throws CardException {
-		return SerialConnection.isPresent();
+		return card != null && card.isPresent();
 	}
 
 	@Override
