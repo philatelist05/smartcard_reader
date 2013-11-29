@@ -1,9 +1,13 @@
 package at.ac.tuwien.mnsa.nokiaspi;
 
-import at.ac.tuwien.mnsa.comm.MessageReader;
-import at.ac.tuwien.mnsa.comm.MessageWriter;
+import at.ac.tuwien.mnsa.message.MessageReader;
+import at.ac.tuwien.mnsa.message.MessageWriter;
 import at.ac.tuwien.mnsa.comm.SerialConnection;
 import at.ac.tuwien.mnsa.comm.SerialConnectionException;
+import at.ac.tuwien.mnsa.message.APDUMessage;
+import at.ac.tuwien.mnsa.message.CardPresentMessage;
+import at.ac.tuwien.mnsa.message.Message;
+import at.ac.tuwien.mnsa.message.MessageFactory;
 import java.io.IOException;
 import javax.smartcardio.ATR;
 import javax.smartcardio.Card;
@@ -11,6 +15,7 @@ import javax.smartcardio.CardChannel;
 import javax.smartcardio.CardException;
 import javax.smartcardio.CommandAPDU;
 import javax.smartcardio.ResponseAPDU;
+import org.apache.log4j.Logger;
 
 public class NokiaCard extends Card {
 
@@ -18,6 +23,7 @@ public class NokiaCard extends Card {
 	private final NokiaChannel basicChannel;
 	private final MessageWriter messageWriter;
 	private final MessageReader messageReader;
+	private final Logger logger = Logger.getLogger(NokiaCard.class);
 
 	public NokiaCard(SerialConnection connection) throws SerialConnectionException {
 		try {
@@ -31,8 +37,14 @@ public class NokiaCard extends Card {
 
 	@Override
 	public ATR getATR() {
-		byte[] atrData = messageReader.readATR();
-		return new ATR(atrData);
+		Message message;
+		try {
+			message = messageReader.read(new MessageFactory());
+			return new ATR(message.getPayload());
+		} catch (IOException ex) {
+			logger.error("Unable to transmit getATR() command", ex);
+			return new ATR(new byte[]{});
+		}
 	}
 
 	@Override
@@ -68,14 +80,26 @@ public class NokiaCard extends Card {
 	public void disconnect(boolean bln) throws CardException {
 	}
 
-	public ResponseAPDU transmitCommand(CommandAPDU capdu) {
-		byte[] requestData = capdu.getBytes();
-		messageWriter.writeAPDU(requestData);
-		byte[] responseData = messageReader.readAPDU();
-		return new ResponseAPDU(responseData);
+	public ResponseAPDU transmitCommand(CommandAPDU capdu) throws CardException {
+		try {
+			byte[] requestData = capdu.getBytes();
+			messageWriter.write(new APDUMessage(requestData));
+			Message message = messageReader.read(new MessageFactory());
+			return new ResponseAPDU(message.getPayload());
+		} catch (IOException ex) {
+			throw new CardException("Unable to transmit command " + capdu, ex);
+		}
 	}
 
 	public boolean isPresent() {
-		return messageReader.isCardPresent();
+		try {
+			messageWriter.write(new CardPresentMessage(new byte[]{}));
+			Message message = messageReader.read(new MessageFactory());
+			byte[] payload = message.getPayload();
+			return (payload[0] & 0x01) != 0;
+		} catch (IOException ex) {
+			logger.error("Unable to send isPresent message.", ex);
+			return false;
+		}
 	}
 }
