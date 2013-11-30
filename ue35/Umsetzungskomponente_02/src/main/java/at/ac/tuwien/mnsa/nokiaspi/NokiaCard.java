@@ -4,14 +4,15 @@ import at.ac.tuwien.mnsa.message.MessageReader;
 import at.ac.tuwien.mnsa.message.MessageWriter;
 import at.ac.tuwien.mnsa.comm.SerialConnection;
 import at.ac.tuwien.mnsa.comm.SerialConnectionException;
+import at.ac.tuwien.mnsa.converter.BooleanByteConverter;
+import at.ac.tuwien.mnsa.converter.ByteByteConverter;
 import at.ac.tuwien.mnsa.message.type.APDUMessage;
 import at.ac.tuwien.mnsa.message.factory.APDUMessageFactory;
 import at.ac.tuwien.mnsa.message.factory.ATRMessageFactory;
 import at.ac.tuwien.mnsa.message.type.CardPresentMessage;
 import at.ac.tuwien.mnsa.message.factory.CardPresentMessageFactory;
-import at.ac.tuwien.mnsa.message.Message;
-import at.ac.tuwien.mnsa.message.MessageException;
-import at.ac.tuwien.mnsa.message.MessageFactory;
+import at.ac.tuwien.mnsa.message.type.Message;
+import at.ac.tuwien.mnsa.message.exception.MessageException;
 import java.io.IOException;
 import javax.smartcardio.ATR;
 import javax.smartcardio.Card;
@@ -43,7 +44,7 @@ public class NokiaCard extends Card {
 	public ATR getATR() {
 		Message<byte[]> message;
 		try {
-			message = messageReader.read(new ATRMessageFactory());
+			message = messageReader.read(new ATRMessageFactory(new ByteByteConverter()));
 			return new ATR(message.getPayload());
 		} catch (MessageException ex) {
 			logger.error("Unable to transmit getATR() command", ex);
@@ -87,8 +88,8 @@ public class NokiaCard extends Card {
 	public ResponseAPDU transmitCommand(CommandAPDU capdu) throws CardException {
 		try {
 			byte[] requestData = capdu.getBytes();
-			messageWriter.write(new APDUMessage(requestData));
-			Message<byte[]> message = messageReader.read(new APDUMessageFactory());
+			messageWriter.write(new APDUMessage(requestData), new ByteByteConverter());
+			Message<byte[]> message = messageReader.read(new APDUMessageFactory(new ByteByteConverter()));
 			return new ResponseAPDU(message.getPayload());
 		} catch (MessageException ex) {
 			throw new CardException("Unable to transmit command " + capdu, ex);
@@ -97,8 +98,8 @@ public class NokiaCard extends Card {
 
 	public boolean isPresent() {
 		try {
-			messageWriter.write(new CardPresentMessage(true));
-			Message<Boolean> message = messageReader.read(new CardPresentMessageFactory());
+			messageWriter.write(new CardPresentMessage(true), new BooleanByteConverter());
+			Message<Boolean> message = messageReader.read(new CardPresentMessageFactory(new BooleanByteConverter()));
 			return message.getPayload();
 		} catch (MessageException ex) {
 			logger.error("Unable to send isPresent message.", ex);

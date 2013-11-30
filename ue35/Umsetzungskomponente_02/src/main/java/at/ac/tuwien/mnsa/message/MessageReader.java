@@ -1,5 +1,8 @@
 package at.ac.tuwien.mnsa.message;
 
+import at.ac.tuwien.mnsa.message.exception.MessageException;
+import at.ac.tuwien.mnsa.message.type.Message;
+import at.ac.tuwien.mnsa.message.factory.MessageFactory;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;

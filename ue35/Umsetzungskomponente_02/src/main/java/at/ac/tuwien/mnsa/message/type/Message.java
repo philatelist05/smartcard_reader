@@ -1,4 +1,4 @@
-package at.ac.tuwien.mnsa.message;
+package at.ac.tuwien.mnsa.message.type;
 
 import java.io.Serializable;
 

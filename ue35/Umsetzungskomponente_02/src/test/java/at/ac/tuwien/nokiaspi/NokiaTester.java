@@ -18,10 +18,9 @@ public class NokiaTester {
 
 	@Test
 	public void testProviderList() {
-		Provider[] x = Security.getProviders();
-
-		for (int i = 0; i < x.length; i++) {
-			System.out.println("Provider: " + x[i].getName());
+		Provider[] providers = Security.getProviders();
+		for (Provider provider : providers) {
+			System.out.println("Provider: " + provider.getName());
 		}
 	}
 

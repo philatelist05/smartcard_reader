@@ -1,7 +1,5 @@
 package at.ac.tuwien.mnsa.message.type;
 
-import at.ac.tuwien.mnsa.message.Message;
-
 public class CardPresentMessage implements Message<Boolean> {
 	
 	private final boolean payload;

@@ -1,9 +1,10 @@
 package at.ac.tuwien.mnsa.message;
 
+import at.ac.tuwien.mnsa.message.exception.MessageException;
+import at.ac.tuwien.mnsa.message.type.Message;
 import at.ac.tuwien.mnsa.ClassUtils;
-import java.io.ByteArrayOutputStream;
+import at.ac.tuwien.mnsa.converter.ByteConverter;
 import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
 import org.apache.log4j.Logger;
@@ -17,38 +18,27 @@ public class MessageWriter {
 		this.outputStream = outputStream;
 	}
 
-	public <T extends Serializable> void write(Message<T> message) throws MessageException {
+	public <T extends Serializable> void write(Message<T> message, ByteConverter<T> converter) throws MessageException {
 		try {
-			writeHeader(message);
-			writePayload(message);
+			writeHeader(message, converter);
+			writePayload(message, converter);
 		} catch (IOException ex) {
 			throw new MessageException("Unable to write message", ex);
 		}
 	}
 
-	private <T extends Serializable> void writeHeader(Message<T> message) throws IOException {
+	private <T extends Serializable> void writeHeader(Message<T> message, ByteConverter<T> converter) throws IOException {
 		byte mty = ClassUtils.lookupSerial(message.getClass());
 		byte nad = mty;
-		byte[] payloadData = getObject(message.getPayload());
+		byte[] payloadData = converter.convert(message.getPayload());
 		int length = payloadData.length;
 		byte lnl = (byte) length;
 		byte lnh = (byte) (length >> 8);
 		outputStream.write(new byte[]{mty, nad, lnh, lnl});
 	}
 
-	private <T extends Serializable> void writePayload(Message<T> message) throws IOException {
-		byte[] payloadData = getObject(message.getPayload());
+	private <T extends Serializable> void writePayload(Message<T> message, ByteConverter<T> converter) throws IOException {
+		byte[] payloadData = converter.convert(message.getPayload());
 		outputStream.write(payloadData);
-	}
-
-	private <T> byte[] getObject(T payload) {
-		try {
-			ByteArrayOutputStream out = new ByteArrayOutputStream();
-			ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
-			return out.toByteArray();
-		} catch (IOException ex) {
-			logger.error("IOException while ", ex);
-			return new byte[]{};
-		}
 	}
 }

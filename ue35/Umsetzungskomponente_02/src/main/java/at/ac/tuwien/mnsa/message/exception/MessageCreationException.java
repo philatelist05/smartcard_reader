@@ -1,4 +1,4 @@
-package at.ac.tuwien.mnsa.message;
+package at.ac.tuwien.mnsa.message.exception;
 
 public class MessageCreationException extends MessageException {
 

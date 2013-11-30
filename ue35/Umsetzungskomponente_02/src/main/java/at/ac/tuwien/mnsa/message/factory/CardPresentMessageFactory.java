@@ -1,19 +1,24 @@
 package at.ac.tuwien.mnsa.message.factory;
 
 import at.ac.tuwien.mnsa.ClassUtils;
+import at.ac.tuwien.mnsa.converter.ByteConverter;
 import at.ac.tuwien.mnsa.message.type.CardPresentMessage;
-import at.ac.tuwien.mnsa.message.Message;
-import at.ac.tuwien.mnsa.message.MessageCreationException;
-import at.ac.tuwien.mnsa.message.MessageFactory;
+import at.ac.tuwien.mnsa.message.type.Message;
+import at.ac.tuwien.mnsa.message.exception.MessageCreationException;
 
-public class CardPresentMessageFactory implements MessageFactory<Boolean> {
+public class CardPresentMessageFactory extends MessageFactory<Boolean> {
 
-	public Message<Boolean> create(byte type, byte[] payload) throws MessageCreationException {
+	public CardPresentMessageFactory(ByteConverter<Boolean> converter) {
+		super(converter);
+	}
+
+	@Override
+	protected Message<Boolean> create(byte type, Boolean t) throws MessageCreationException {
 		byte expectedType = ClassUtils.lookupSerial(CardPresentMessage.class);
 		if (expectedType != type) {
-			throw new MessageCreationException("Expected type is " + 
-					expectedType + ", but " + type + " given");
+			throw new MessageCreationException("Expected type is "
+					+ expectedType + ", but " + type + " given");
 		}
-		return new CardPresentMessage((payload[0] & 0x01) != 0);
+		return new CardPresentMessage(t);
 	}
 }
