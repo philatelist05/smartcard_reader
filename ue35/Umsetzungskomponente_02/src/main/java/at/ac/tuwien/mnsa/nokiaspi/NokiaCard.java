@@ -5,7 +5,10 @@ import at.ac.tuwien.mnsa.message.MessageWriter;
 import at.ac.tuwien.mnsa.comm.SerialConnection;
 import at.ac.tuwien.mnsa.comm.SerialConnectionException;
 import at.ac.tuwien.mnsa.message.APDUMessage;
+import at.ac.tuwien.mnsa.message.APDUMessageFactory;
+import at.ac.tuwien.mnsa.message.ATRMessageFactory;
 import at.ac.tuwien.mnsa.message.CardPresentMessage;
+import at.ac.tuwien.mnsa.message.CardPresentMessageFactory;
 import at.ac.tuwien.mnsa.message.Message;
 import at.ac.tuwien.mnsa.message.MessageException;
 import at.ac.tuwien.mnsa.message.MessageFactory;
@@ -40,7 +43,7 @@ public class NokiaCard extends Card {
 	public ATR getATR() {
 		Message<byte[]> message;
 		try {
-			message = messageReader.read(new MessageFactory());
+			message = messageReader.read(new ATRMessageFactory());
 			return new ATR(message.getPayload());
 		} catch (MessageException ex) {
 			logger.error("Unable to transmit getATR() command", ex);
@@ -85,7 +88,7 @@ public class NokiaCard extends Card {
 		try {
 			byte[] requestData = capdu.getBytes();
 			messageWriter.write(new APDUMessage(requestData));
-			Message<byte[]> message = messageReader.read(new MessageFactory());
+			Message<byte[]> message = messageReader.read(new APDUMessageFactory());
 			return new ResponseAPDU(message.getPayload());
 		} catch (MessageException ex) {
 			throw new CardException("Unable to transmit command " + capdu, ex);
@@ -95,7 +98,7 @@ public class NokiaCard extends Card {
 	public boolean isPresent() {
 		try {
 			messageWriter.write(new CardPresentMessage(true));
-			Message<Boolean> message = messageReader.read(new MessageFactory());
+			Message<Boolean> message = messageReader.read(new CardPresentMessageFactory());
 			return message.getPayload();
 		} catch (MessageException ex) {
 			logger.error("Unable to send isPresent message.", ex);

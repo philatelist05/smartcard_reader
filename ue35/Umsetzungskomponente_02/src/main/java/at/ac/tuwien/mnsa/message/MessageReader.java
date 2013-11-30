@@ -14,7 +14,7 @@ public class MessageReader {
 		this.inputStream = inputStream;
 	}
 
-	public <T extends Serializable> Message<T> read(MessageFactory factory)
+	public <T extends Serializable> Message<T> read(MessageFactory<T> factory)
 			throws MessageException {
 		try {
 			byte[] header = new byte[4];
@@ -29,11 +29,6 @@ public class MessageReader {
 			byte[] payload = new byte[length];
 			inputStream.read(payload);
 			return factory.create(mty, payload);
-		} catch (ClassCastException ex) {
-			throw new MessageException("Can not instantiate message "
-					+ "because of wrong message type Byte", ex);
-		} catch(IllegalStateException ex) {
-			throw new MessageException(ex);
 		} catch (IOException ex) {
 			throw new MessageException("Unable to read message", ex);
 		}
