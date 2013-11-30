@@ -1,7 +1,7 @@
 package at.ac.tuwien.nokiaspi;
 
-import at.ac.tuwien.mnsa.message.ATRMessageFactory;
-import at.ac.tuwien.mnsa.message.CardPresentMessageFactory;
+import at.ac.tuwien.mnsa.message.factory.ATRMessageFactory;
+import at.ac.tuwien.mnsa.message.factory.CardPresentMessageFactory;
 import at.ac.tuwien.mnsa.message.Message;
 import at.ac.tuwien.mnsa.message.MessageCreationException;
 import at.ac.tuwien.mnsa.message.MessageFactory;

@@ -1,4 +1,9 @@
-package at.ac.tuwien.mnsa.message;
+package at.ac.tuwien.mnsa.message.factory;
+
+import at.ac.tuwien.mnsa.message.type.APDUMessage;
+import at.ac.tuwien.mnsa.message.Message;
+import at.ac.tuwien.mnsa.message.MessageCreationException;
+import at.ac.tuwien.mnsa.message.MessageFactory;
 
 public class APDUMessageFactory implements MessageFactory<byte[]> {
 

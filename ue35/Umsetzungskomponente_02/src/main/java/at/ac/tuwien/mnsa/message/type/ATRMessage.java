@@ -1,4 +1,6 @@
-package at.ac.tuwien.mnsa.message;
+package at.ac.tuwien.mnsa.message.type;
+
+import at.ac.tuwien.mnsa.message.Message;
 
 public class ATRMessage implements Message<byte[]> {
 	
