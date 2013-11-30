@@ -11,11 +11,6 @@ public class APDUMessage implements Message<byte[]> {
 	}
 
 	@Override
-	public byte getIdentifier() {
-		return 2;
-	}
-
-	@Override
 	public byte[] getPayload() {
 		return payload;
 	}

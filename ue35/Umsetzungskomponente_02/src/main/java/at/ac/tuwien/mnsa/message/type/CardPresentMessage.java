@@ -11,11 +11,6 @@ public class CardPresentMessage implements Message<Boolean> {
 	}
 
 	@Override
-	public byte getIdentifier() {
-		return 3;
-	}
-
-	@Override
 	public Boolean getPayload() {
 		return payload;
 	}

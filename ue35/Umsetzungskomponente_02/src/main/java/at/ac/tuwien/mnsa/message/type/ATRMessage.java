@@ -11,11 +11,6 @@ public class ATRMessage implements Message<byte[]> {
 	}
 
 	@Override
-	public byte getIdentifier() {
-		return 1;
-	}
-
-	@Override
 	public byte[] getPayload() {
 		return payload;
 	}

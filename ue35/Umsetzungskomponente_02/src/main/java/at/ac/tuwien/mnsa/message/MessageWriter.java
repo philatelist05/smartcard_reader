@@ -1,5 +1,6 @@
 package at.ac.tuwien.mnsa.message;
 
+import at.ac.tuwien.mnsa.ClassUtils;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
@@ -26,7 +27,7 @@ public class MessageWriter {
 	}
 
 	private <T extends Serializable> void writeHeader(Message<T> message) throws IOException {
-		byte mty = message.getIdentifier();
+		byte mty = ClassUtils.lookupSerial(message.getClass());
 		byte nad = mty;
 		byte[] payloadData = getObject(message.getPayload());
 		int length = payloadData.length;

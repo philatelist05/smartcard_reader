@@ -1,10 +1,13 @@
 package at.ac.tuwien.nokiaspi;
 
+import at.ac.tuwien.mnsa.ClassUtils;
 import at.ac.tuwien.mnsa.message.factory.ATRMessageFactory;
 import at.ac.tuwien.mnsa.message.factory.CardPresentMessageFactory;
 import at.ac.tuwien.mnsa.message.Message;
 import at.ac.tuwien.mnsa.message.MessageCreationException;
 import at.ac.tuwien.mnsa.message.MessageFactory;
+import at.ac.tuwien.mnsa.message.type.ATRMessage;
+import at.ac.tuwien.mnsa.message.type.CardPresentMessage;
 import org.junit.Test;
 
 import static org.junit.Assert.assertArrayEquals;
@@ -17,7 +20,8 @@ public class TestMessageFactory {
 	public void testATRMessage() throws Exception {
 		MessageFactory<byte[]> factory = new ATRMessageFactory();
 		byte[] expected = new byte[]{0, 1, 0};
-		Message<byte[]> message = factory.create(1, expected);
+		byte serial = ClassUtils.lookupSerial(ATRMessage.class);
+		Message<byte[]> message = factory.create(serial, expected);
 		byte[] actual = message.getPayload();
 		assertArrayEquals(expected, actual);
 	}
@@ -25,14 +29,16 @@ public class TestMessageFactory {
 	@Test(expected = MessageCreationException.class)
 	public void testWithCastException() throws Exception {
 		MessageFactory<byte[]> factory = new ATRMessageFactory();
-		factory.create(2, new byte[]{});
+		byte serial = ClassUtils.lookupSerial(Boolean.class);
+		factory.create(serial, new byte[]{});
 	}
 
 	@Test
 	public void testTrueCardPresetMessage() throws Exception {
 		MessageFactory<Boolean> factory = new CardPresentMessageFactory();
 		byte[] expected = new byte[]{1};
-		Message<Boolean> message = factory.create(3, expected);
+		byte serial = ClassUtils.lookupSerial(CardPresentMessage.class);
+		Message<Boolean> message = factory.create(serial, expected);
 		boolean actual = message.getPayload();
 		assertTrue(actual);
 	}
@@ -41,7 +47,8 @@ public class TestMessageFactory {
 	public void testFalseCardPresetMessage() throws Exception {
 		MessageFactory<Boolean> factory = new CardPresentMessageFactory();
 		byte[] expected = new byte[]{0};
-		Message<Boolean> message = factory.create(3, expected);
+		byte serial = ClassUtils.lookupSerial(CardPresentMessage.class);
+		Message<Boolean> message = factory.create(serial, expected);
 		boolean actual = message.getPayload();
 		assertFalse(actual);
 	}
