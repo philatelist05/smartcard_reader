@@ -1,11 +1,7 @@
 package at.ac.tuwien.mnsa.message;
 
-import at.ac.tuwien.mnsa.message.exception.MessageException;
-import at.ac.tuwien.mnsa.message.type.Message;
-import at.ac.tuwien.mnsa.message.factory.MessageFactory;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Serializable;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
@@ -17,23 +13,35 @@ public class MessageReader {
 		this.inputStream = inputStream;
 	}
 
-	public <T extends Serializable> Message<T> read(MessageFactory<T> factory)
-			throws MessageException {
+	public byte[] read() throws MessageException {
+		try {
+			int length = readHeader();
+			byte[] payload = new byte[length];
+			inputStream.read(payload);
+			return payload;
+		} catch (IOException e) {
+			throw new MessageException("Unable to read body", e);
+		}
+	}
+
+	private int readHeader() throws MessageException {
 		try {
 			byte[] header = new byte[4];
 			inputStream.read(header);
-			byte mty = header[0];
-			byte nad = header[1];
-			int length = ByteBuffer
+			byte messageType = header[0];
+			byte nodeAddress = header[1];
+			if (messageType != nodeAddress) {
+				throw new MessageException("Message type does not match node address.");
+			}
+			if (messageType == MessageType.ERROR.getByteValue()) {
+				throw new MessageException("Got error message");
+			}
+			return ByteBuffer
 					.wrap(new byte[]{header[2], header[3]})
 					.order(ByteOrder.BIG_ENDIAN)
 					.getInt();
-
-			byte[] payload = new byte[length];
-			inputStream.read(payload);
-			return factory.create(mty, payload);
-		} catch (IOException ex) {
-			throw new MessageException("Unable to read message", ex);
+		} catch (IOException e) {
+			throw new MessageException("Unable to read header", e);
 		}
 	}
 }

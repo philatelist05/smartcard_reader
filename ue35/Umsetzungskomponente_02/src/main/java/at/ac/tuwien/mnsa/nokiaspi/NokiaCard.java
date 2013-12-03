@@ -1,54 +1,50 @@
 package at.ac.tuwien.mnsa.nokiaspi;
 
-import at.ac.tuwien.mnsa.message.MessageReader;
-import at.ac.tuwien.mnsa.message.MessageWriter;
 import at.ac.tuwien.mnsa.comm.SerialConnection;
 import at.ac.tuwien.mnsa.comm.SerialConnectionException;
-import at.ac.tuwien.mnsa.converter.BooleanByteConverter;
-import at.ac.tuwien.mnsa.converter.ByteByteConverter;
-import at.ac.tuwien.mnsa.message.type.APDUMessage;
-import at.ac.tuwien.mnsa.message.factory.APDUMessageFactory;
-import at.ac.tuwien.mnsa.message.factory.ATRMessageFactory;
-import at.ac.tuwien.mnsa.message.type.CardPresentMessage;
-import at.ac.tuwien.mnsa.message.factory.CardPresentMessageFactory;
-import at.ac.tuwien.mnsa.message.type.Message;
-import at.ac.tuwien.mnsa.message.exception.MessageException;
-import java.io.IOException;
-import javax.smartcardio.ATR;
-import javax.smartcardio.Card;
-import javax.smartcardio.CardChannel;
-import javax.smartcardio.CardException;
-import javax.smartcardio.CommandAPDU;
-import javax.smartcardio.ResponseAPDU;
+import at.ac.tuwien.mnsa.message.MessageException;
+import at.ac.tuwien.mnsa.message.MessageReader;
+import at.ac.tuwien.mnsa.message.MessageType;
+import at.ac.tuwien.mnsa.message.MessageWriter;
 import org.apache.log4j.Logger;
+
+import javax.smartcardio.*;
+import java.io.IOException;
 
 public class NokiaCard extends Card {
 
 	private static final String T0_PROTOCOL = "T=0";
+	private static final String DEFAULT_ATR = "3BFA1800008131FE454A434F5033315632333298";
 	private final NokiaChannel basicChannel;
 	private final MessageWriter messageWriter;
 	private final MessageReader messageReader;
 	private final Logger logger = Logger.getLogger(NokiaCard.class);
 
-	public NokiaCard(SerialConnection connection) throws SerialConnectionException {
+	public NokiaCard(SerialConnection connection) throws SerialConnectionException, MessageException {
 		try {
 			basicChannel = new NokiaChannel(this, 0, connection);
 			messageWriter = new MessageWriter(connection.getOutputStream());
 			messageReader = new MessageReader(connection.getInputStream());
+			connect();
 		} catch (IOException ex) {
 			throw new SerialConnectionException("Can not get Outputstream from connection", ex);
 		}
 	}
 
+	private void connect() throws MessageException {
+		messageWriter.write(MessageType.CONNECT);
+		messageReader.read();
+	}
+
 	@Override
 	public ATR getATR() {
-		Message<byte[]> message;
 		try {
-			message = messageReader.read(new ATRMessageFactory(new ByteByteConverter()));
-			return new ATR(message.getPayload());
-		} catch (MessageException ex) {
-			logger.error("Unable to transmit getATR() command", ex);
-			return new ATR(new byte[]{});
+			messageWriter.write(MessageType.ATR);
+			byte[] message = messageReader.read();
+			return new ATR(message);
+		} catch (MessageException e) {
+			logger.error("Can not get ATR message", e);
+			return new ATR(DEFAULT_ATR.getBytes());
 		}
 	}
 
@@ -83,27 +79,32 @@ public class NokiaCard extends Card {
 
 	@Override
 	public void disconnect(boolean bln) throws CardException {
+		try {
+			messageWriter.write(MessageType.CLOSE);
+			messageReader.read();
+		} catch (MessageException e) {
+			throw new CardException(e);
+		}
 	}
 
 	public ResponseAPDU transmitCommand(CommandAPDU capdu) throws CardException {
 		try {
 			byte[] requestData = capdu.getBytes();
-			messageWriter.write(new APDUMessage(requestData), new ByteByteConverter());
-			Message<byte[]> message = messageReader.read(new APDUMessageFactory(new ByteByteConverter()));
-			return new ResponseAPDU(message.getPayload());
-		} catch (MessageException ex) {
-			throw new CardException("Unable to transmit command " + capdu, ex);
+			messageWriter.write(MessageType.APDU, requestData);
+			byte[] message = messageReader.read();
+			return new ResponseAPDU(message);
+		} catch (MessageException e) {
+			throw new CardException(e);
 		}
 	}
 
-	public boolean isPresent() {
+	public boolean isPresent() throws CardException{
 		try {
-			messageWriter.write(new CardPresentMessage(true), new BooleanByteConverter());
-			Message<Boolean> message = messageReader.read(new CardPresentMessageFactory(new BooleanByteConverter()));
-			return message.getPayload();
-		} catch (MessageException ex) {
-			logger.error("Unable to send isPresent message.", ex);
-			return false;
+			messageWriter.write(MessageType.CARD_PRESENT);
+			byte[] bytes = messageReader.read();
+			return bytes.length == 1 && bytes[0] == 1;
+		} catch (MessageException e) {
+			throw new CardException(e);
 		}
 	}
 }
