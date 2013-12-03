@@ -1,24 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>at.ac.tuwien.mnsa</groupId>
 	<artifactId>ue35</artifactId>
 	<version>1.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>ue35</name>
-  
+
 	<modules>
 		<module>Umsetzungskomponente_01</module>
 		<module>Umsetzungskomponente_02</module>
 	</modules>
-    
+
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<junit.version>4.11</junit.version>
 		<log4j.version>1.2.17</log4j.version>
 		<commons-configuration.version>1.10</commons-configuration.version>
+		<commons-io.version>2.2</commons-io.version>
 	</properties>
-    
+
 	<build>
 		<plugins>
 			<plugin>
@@ -31,7 +33,7 @@
 			</plugin>
 		</plugins>
 	</build>
-    
+
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
@@ -46,10 +48,15 @@
 				<version>${log4j.version}</version>
 			</dependency>
 			<dependency>
-			<groupId>commons-configuration</groupId>
-			<artifactId>commons-configuration</artifactId>
-			<version>${commons-configuration.version}</version>
-		</dependency>
+				<groupId>commons-configuration</groupId>
+				<artifactId>commons-configuration</artifactId>
+				<version>${commons-configuration.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>commons-io</groupId>
+				<artifactId>commons-io</artifactId>
+				<version>${commons-io.version}</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 </project>
