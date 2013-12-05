@@ -11,6 +11,7 @@
 	<modules>
 		<module>Umsetzungskomponente_01</module>
 		<module>Umsetzungskomponente_02</module>
+		<module>Umsetzungskomponente_03</module>
 	</modules>
 
 	<properties>
