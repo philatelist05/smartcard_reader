@@ -1,7 +1,6 @@
 package at.ac.tuwien.mnsa.message;
 
-import org.apache.commons.io.IOUtils;
-
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
@@ -21,7 +20,7 @@ public class MessageReader {
 			byte messageType;
 			try {
 				byte[] header = new byte[4];
-				IOUtils.readFully(inputStream, header);
+				readFully(inputStream, header);
 				messageType = header[0];
 				byte nodeAddress = header[1];
 				if (messageType != nodeAddress) {
@@ -38,10 +37,26 @@ public class MessageReader {
 				throw new MessageException("Unable to read header", e);
 			}
 			byte[] payload = new byte[length];
-			IOUtils.readFully(inputStream, payload);
+			readFully(inputStream, payload);
 			return new Message(Message.MessageType.valueOf(messageType), payload);
 		} catch (IOException e) {
 			throw new MessageException("Unable to read body", e);
+		}
+	}
+
+	private void readFully(InputStream inputStream, byte[] buffer) throws IOException {
+		int remaining = buffer.length;
+		while (remaining > 0) {
+			int location = buffer.length - remaining;
+			int count = inputStream.read(buffer, 0 + location, remaining);
+			if (count == -1) { // EOF
+				break;
+			}
+			remaining -= count;
+		}
+		int actual = buffer.length - remaining;
+		if (actual != buffer.length) {
+			throw new EOFException("Length to read: " + buffer.length + " actual: " + actual);
 		}
 	}
 

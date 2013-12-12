@@ -1,4 +1,4 @@
-package at.ac.tuwien.mnsa;
+package at.ac.tuwien.mnsa.midlet;
 
 import javax.microedition.contactless.ContactlessException;
 import javax.microedition.contactless.DiscoveryManager;
@@ -24,6 +24,8 @@ public class Midlet extends MIDlet {
 				}
 			}
 		});
+
+		CommServerThread serverThread = new CommServerThread("");
 
 		try {
 			CardConnector connector = new CardConnector();

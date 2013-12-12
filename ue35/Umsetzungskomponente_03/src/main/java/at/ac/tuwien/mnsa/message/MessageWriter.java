@@ -22,7 +22,7 @@ public class MessageWriter {
 			outputStream.write(new byte[]{type.getByteValue(), nodeAddress, lnh, lnl});
 			outputStream.flush();
 		} catch (IOException e) {
-			throw new MessageException("Unable to write Message: " + String.format("%02x", payload), e);
+			throw new MessageException("Unable to write Message: " + payload, e);
 		}
 	}
 }

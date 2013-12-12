@@ -1,4 +1,4 @@
-package at.ac.tuwien.mnsa;
+package at.ac.tuwien.mnsa.midlet;
 
 import javax.microedition.contactless.TargetListener;
 import javax.microedition.contactless.TargetProperties;

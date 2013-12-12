@@ -90,7 +90,7 @@
 						<MIDlet>
 							<name>${project.name}</name>
 							<icon>/pyx.png</icon>
-							<class>at.ac.tuwien.mnsa.Midlet</class>
+							<class>at.ac.tuwien.mnsa.midlet.Midlet</class>
 						</MIDlet>
 					</midlets>
 					<libs>
