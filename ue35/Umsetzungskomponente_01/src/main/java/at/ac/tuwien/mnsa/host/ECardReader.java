@@ -3,6 +3,7 @@ package at.ac.tuwien.mnsa.host;
 import org.apache.log4j.Logger;
 
 import javax.smartcardio.*;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.ListIterator;
 
@@ -27,7 +28,12 @@ public class ECardReader {
     public static void main(String[] args) {
 
         // Factory erstellen
-        TerminalFactory tf = TerminalFactory.getDefault();
+        TerminalFactory tf = null;
+        try {
+            tf = TerminalFactory.getInstance("NokiaPRovider", null);
+        } catch (NoSuchAlgorithmException e) {
+            logger.error("Unable to find NokiaProvider", e);
+        }
 
         // Terminals holen
         CardTerminals ct = tf.terminals();
