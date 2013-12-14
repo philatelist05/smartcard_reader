@@ -20,6 +20,7 @@ public class CommServerThread extends Thread {
     private final MessageReader messageReader;
     private final MessageWriter messageWriter;
     private final CardConnector cardConnector;
+    private final Logger logger;
     private volatile boolean isAlive;
     private CardConnection cardConnection;
 
@@ -35,6 +36,7 @@ public class CommServerThread extends Thread {
         messageReader = new MessageReader(inputStream);
         messageWriter = new MessageWriter(outputStream);
         cardConnector = new CardConnector();
+        logger = Logger.getLogger(getClass());
         isAlive = true;
     }
 
@@ -51,6 +53,7 @@ public class CommServerThread extends Thread {
                         String uid = targetProperties.getUid();
                         responseMessage = new Message(new Message.MessageType(Message.MessageType.ATR), uid.getBytes());
                     } else {
+                        logger.error("No card is present when receiving ATR message");
                         responseMessage = new Message(new Message.MessageType(Message.MessageType.ERROR));
                     }
                 } else if (messageType == Message.MessageType.CARD_PRESENT) {
@@ -63,6 +66,7 @@ public class CommServerThread extends Thread {
                         cardConnection = CardConnection.open(targetProperties);
                         responseMessage = new Message(new Message.MessageType(Message.MessageType.CONNECT));
                     } catch (IOException e) {
+                        logger.error("Can not open new card connection", e);
                         responseMessage = new Message(new Message.MessageType(Message.MessageType.ERROR));
                     }
                 } else if (messageType == Message.MessageType.CLOSE) {
@@ -70,7 +74,7 @@ public class CommServerThread extends Thread {
                         close();
                         responseMessage = new Message(new Message.MessageType(Message.MessageType.CLOSE));
                     } catch (IOException e) {
-                        //log Error
+                        logger.error("Unable to close connection", e);
                     }
                 } else if (messageType == Message.MessageType.TEST) {
                     responseMessage = requestMessage;
@@ -80,18 +84,20 @@ public class CommServerThread extends Thread {
                             byte[] responsePayload = cardConnection.exchangeData(requestMessage.getPayload());
                             responseMessage = new Message(new Message.MessageType(Message.MessageType.APDU), responsePayload);
                         } catch (IOException e) {
+                            logger.error("Unable to exchange APDU message", e);
                             responseMessage = new Message(new Message.MessageType(Message.MessageType.ERROR));
                         }
                     } else {
+                        logger.error("Either no card inserted or no connection is present");
                         responseMessage = new Message(new Message.MessageType(Message.MessageType.ERROR));
                     }
                 } else {
-                    //log error
+                    logger.error("Unknown message Type " + messageType);
                 }
 
                 sendResponse(responseMessage);
             } catch (MessageException e) {
-                //log error read Message
+                logger.error("Unable to receive message", e);
             }
         }
     }
@@ -104,7 +110,9 @@ public class CommServerThread extends Thread {
                 try {
                     close();
                 } catch (IOException e1) {
-                    //Log error
+                    logger.error("Unable to close connection", e1);
+                }finally {
+                    logger.error("Unable to send message " + responseMessage, e);
                 }
             }
         }

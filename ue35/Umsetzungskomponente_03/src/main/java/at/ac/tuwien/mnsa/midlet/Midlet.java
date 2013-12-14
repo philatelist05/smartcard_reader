@@ -14,10 +14,13 @@ public class Midlet extends MIDlet {
     private CommServerThread commServerThread;
     private CardConnector cardConnector;
     private DiscoveryManager discoveryManager;
+    private Logger logger;
 
     protected void startApp() throws MIDletStateChangeException {
         form = new Form("Main Form");
         Display.getDisplay(this).setCurrent(form);
+        Logger.addForm(form);
+        logger = Logger.getLogger(getClass());
 
         final Command exitCommand = new Command("Exit", Command.EXIT, 1);
         form.addCommand(exitCommand);
@@ -32,7 +35,7 @@ public class Midlet extends MIDlet {
         try {
             commServerThread = new CommServerThread("");
         } catch (IOException e) {
-            //log error
+            logger.error("Unable to start main thread for serial communication", e);
             destroyApp(true);
         }
 
@@ -41,7 +44,7 @@ public class Midlet extends MIDlet {
             discoveryManager = DiscoveryManager.getInstance();
             discoveryManager.addTargetListener(cardConnector, TargetType.ISO14443_CARD);
         } catch (ContactlessException e) {
-
+            logger.error("Unable to register TargetListener", e);
         }
     }
 
@@ -54,7 +57,7 @@ public class Midlet extends MIDlet {
                 commServerThread.close();
             }
         } catch (IOException e) {
-            //log error
+            logger.error("Unable to close App", e);
         } finally {
             if (cardConnector != null && discoveryManager != null) {
                 discoveryManager.removeTargetListener(cardConnector, TargetType.ISO14443_CARD);
