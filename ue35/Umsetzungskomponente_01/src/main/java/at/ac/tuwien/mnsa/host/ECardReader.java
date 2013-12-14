@@ -30,7 +30,7 @@ public class ECardReader {
         // Factory erstellen
         TerminalFactory tf = null;
         try {
-            tf = TerminalFactory.getInstance("NokiaPRovider", null);
+            tf = TerminalFactory.getInstance("NokiaProvider", null);
         } catch (NoSuchAlgorithmException e) {
             logger.error("Unable to find NokiaProvider", e);
         }
