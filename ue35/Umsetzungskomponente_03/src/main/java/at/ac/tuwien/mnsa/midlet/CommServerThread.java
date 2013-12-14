@@ -36,7 +36,7 @@ public class CommServerThread extends Thread {
         messageReader = new MessageReader(inputStream);
         messageWriter = new MessageWriter(outputStream);
         cardConnector = new CardConnector();
-        logger = Logger.getLogger(getClass());
+        logger = Logger.getLogger(getClass().getName());
         isAlive = true;
     }
 

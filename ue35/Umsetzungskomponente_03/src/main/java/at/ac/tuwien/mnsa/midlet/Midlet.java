@@ -20,7 +20,7 @@ public class Midlet extends MIDlet {
         form = new Form("Main Form");
         Display.getDisplay(this).setCurrent(form);
         Logger.addForm(form);
-        logger = Logger.getLogger(getClass());
+        logger = Logger.getLogger(getClass().getName());
 
         final Command exitCommand = new Command("Exit", Command.EXIT, 1);
         form.addCommand(exitCommand);

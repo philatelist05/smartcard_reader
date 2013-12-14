@@ -15,8 +15,8 @@ public final class Logger {
             Logger.form = form;
     }
 
-    public static Logger getLogger(Class aClass) {
-        return new Logger("[" + aClass.getSimpleName() + "]");
+    public static Logger getLogger(String aClass) {
+        return new Logger("[" + aClass + "]");
     }
 
     private Logger(String prefix) {
