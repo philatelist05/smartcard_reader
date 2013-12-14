@@ -10,7 +10,7 @@ public class CardConnection {
 
 	private final ISO14443Connection connection;
 
-	public CardConnection(ISO14443Connection connection) {
+	private CardConnection(ISO14443Connection connection) {
 		this.connection = connection;
 	}
 
@@ -24,7 +24,7 @@ public class CardConnection {
 		try {
 			return connection.exchangeData(request);
 		} catch (ContactlessException e) {
-			throw new IOException(e);
+			throw new IOException(e.toString());
 		}
 	}
 

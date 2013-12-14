@@ -1,51 +1,47 @@
 package at.ac.tuwien.mnsa.message;
 
 public class Message {
-	public enum MessageType {
-		TEST((byte) 0x00),
-		APDU((byte) 0x01),
-		CARD_PRESENT((byte) 0x03),
-		ATR((byte) 0x02),
-		CONNECT((byte) 0x04),
-		CLOSE((byte) 0x05),
-		ERROR((byte) 0x7F);
+	public static class MessageType {
+		public static final byte TEST = (byte) 0x00;
+		public static final byte APDU = (byte) 0x01;
+		public static final byte CARD_PRESENT=(byte) 0x03;
+		public static final byte ATR=(byte) 0x02;
+		public static final byte CONNECT=(byte) 0x04;
+		public static final byte CLOSE=(byte) 0x05;
+		public static final byte ERROR=(byte) 0x7F;
 
-		private final byte b;
+        private final byte value;
 
-		private MessageType(byte b) {
-			this.b = b;
-		}
+        public MessageType(byte value) {
+            this.value = value;
+        }
 
-		public byte getByteValue() {
-			return b;
-		}
+        public static MessageType valueOf(byte b) throws MessageException {
+            if (b == TEST) {
+                return new MessageType(TEST);
+            } else if (b == APDU) {
+                return new MessageType(APDU);
+            } else if (b == CARD_PRESENT) {
+                return new MessageType(CARD_PRESENT);
+            } else if (b == ATR) {
+                return new MessageType(ATR);
+            } else if (b == CONNECT) {
+                return new MessageType(CONNECT);
+            } else if (b == CLOSE) {
+                return new MessageType(CLOSE);
+            } else if (b == ERROR) {
+                return new MessageType(ERROR);
+            }
+            throw new MessageException("Unknown Type " +  b);
+        }
+    }
 
-		public static MessageType valueOf(byte b) throws MessageException {
-			if (b == TEST.getByteValue()) {
-				return TEST;
-			} else if (b == APDU.getByteValue()) {
-				return APDU;
-			} else if (b == CARD_PRESENT.getByteValue()) {
-				return CARD_PRESENT;
-			} else if (b == ATR.getByteValue()) {
-				return ATR;
-			} else if (b == CONNECT.getByteValue()) {
-				return CONNECT;
-			} else if (b == CLOSE.getByteValue()) {
-				return CLOSE;
-			} else if (b == ERROR.getByteValue()) {
-				return ERROR;
-			}
-			throw new MessageException("Unknown Type " +  b);
-		}
-	}
-
-	private final MessageType type;
+	private final byte type;
 
 	private final byte[] payload;
 
 	public Message(MessageType type, byte[] payload) {
-		this.type = type;
+		this.type = type.value;
 		this.payload = payload;
 	}
 
@@ -57,7 +53,7 @@ public class Message {
 		return payload;
 	}
 
-	public MessageType getType() {
+	public byte getType() {
 		return type;
 	}
 }

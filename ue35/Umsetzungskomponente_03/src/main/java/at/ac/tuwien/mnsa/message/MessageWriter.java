@@ -12,14 +12,14 @@ public class MessageWriter {
 	}
 
 	public void write(Message message) throws MessageException {
-		Message.MessageType type = message.getType();
+		byte type = message.getType();
 		byte[] payload = message.getPayload();
 		try {
-			byte nodeAddress = type.getByteValue();
-			int length = payload.length;
-			byte lnl = (byte) length;
-			byte lnh = (byte) (length >> 8);
-			outputStream.write(new byte[]{type.getByteValue(), nodeAddress, lnh, lnl});
+			byte nodeAddress = type;
+			short length = (short) payload.length;
+            byte lsb = (byte) (length & 0xff);
+            byte msb = (byte) (length >> 8);
+			outputStream.write(new byte[]{type, nodeAddress, msb, lsb});
 			outputStream.flush();
 		} catch (IOException e) {
 			throw new MessageException("Unable to write Message: " + payload, e);

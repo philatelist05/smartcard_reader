@@ -3,8 +3,6 @@ package at.ac.tuwien.mnsa.message;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 
 public class MessageReader {
 
@@ -16,7 +14,7 @@ public class MessageReader {
 
 	public Message read() throws MessageException {
 		try {
-			int length;
+			short length;
 			byte messageType;
 			try {
 				byte[] header = new byte[4];
@@ -26,14 +24,11 @@ public class MessageReader {
 				if (messageType != nodeAddress) {
 					throw new MessageException("Message type does not match node address.");
 				}
-				if (messageType == Message.MessageType.ERROR.getByteValue()) {
+				if (messageType == Message.MessageType.ERROR) {
 					throw new MessageException("Got error message");
 				}
-				length = ByteBuffer
-						.wrap(new byte[]{header[2], header[3]})
-						.order(ByteOrder.BIG_ENDIAN)
-						.getInt();
-			} catch (IOException e) {
+                length = toShort(header[2], header[3]);
+            } catch (IOException e) {
 				throw new MessageException("Unable to read header", e);
 			}
 			byte[] payload = new byte[length];
@@ -60,4 +55,7 @@ public class MessageReader {
 		}
 	}
 
+    private short toShort(byte msb, byte lsb) {
+        return (short) ((msb << 8) | lsb);
+    }
 }
