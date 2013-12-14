@@ -20,22 +20,14 @@ public class NokiaTerminal extends CardTerminal {
 
     @Override
     public Card connect(String string) throws CardException {
-        try {
-            if (card == null) {
-                SerialConnection connection = SerialConnection.open();
-                card = new NokiaCard(connection);
-            }
-            return card;
-        } catch (SerialConnectionException ex) {
-            throw new CardException(ex);
-        } catch (MessageException ex) {
-            throw new CardException(ex);
-        }
+        openConnectionIfClosed();
+        return card;
     }
 
     @Override
     public boolean isCardPresent() throws CardException {
-        return card != null && card.isPresent();
+        openConnectionIfClosed();
+        return card.isPresent();
     }
 
     @Override
@@ -46,5 +38,18 @@ public class NokiaTerminal extends CardTerminal {
     @Override
     public boolean waitForCardAbsent(long l) throws CardException {
         return false;
+    }
+
+    private void openConnectionIfClosed() throws CardException {
+        try {
+            if (card == null) {
+                SerialConnection connection = SerialConnection.open();
+                card = new NokiaCard(connection);
+            }
+        } catch (SerialConnectionException ex) {
+            throw new CardException(ex);
+        } catch (MessageException ex) {
+            throw new CardException(ex);
+        }
     }
 }
