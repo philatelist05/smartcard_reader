@@ -10,6 +10,7 @@ import org.apache.log4j.Logger;
 
 import javax.smartcardio.*;
 import java.io.IOException;
+import java.util.Arrays;
 
 public class NokiaCard extends Card {
 
@@ -33,14 +34,18 @@ public class NokiaCard extends Card {
 
     private void connect() throws MessageException {
         messageWriter.write(new Message(Message.MessageType.CONNECT));
+        logger.info("Sent Connect message");
         messageReader.read();
+        logger.info("Got Connect message");
     }
 
     @Override
     public ATR getATR() {
         try {
             messageWriter.write(new Message(Message.MessageType.ATR));
+            logger.info("Sent ATR Request");
             Message message = messageReader.read();
+            logger.info("Got ATR Response: "+ Arrays.toString(message.getPayload()));
             return new ATR(message.getPayload());
         } catch (MessageException e) {
             logger.error("Can not get ATR message", e);
@@ -81,7 +86,9 @@ public class NokiaCard extends Card {
     public void disconnect(boolean bln) throws CardException {
         try {
             messageWriter.write(new Message(Message.MessageType.CLOSE));
+            logger.info("Sent Closing message");
             messageReader.read();
+            logger.info("Got Closing message");
         } catch (MessageException e) {
             throw new CardException(e);
         }
@@ -91,7 +98,9 @@ public class NokiaCard extends Card {
         try {
             byte[] requestData = capdu.getBytes();
             messageWriter.write(new Message(Message.MessageType.APDU, requestData));
+            logger.info("Sent APDU Request: "+ Arrays.toString(requestData));
             Message message = messageReader.read();
+            logger.info("Got APDU Response: "+ Arrays.toString(message.getPayload()));
             return new ResponseAPDU(message.getPayload());
         } catch (MessageException e) {
             throw new CardException(e);
@@ -101,9 +110,12 @@ public class NokiaCard extends Card {
     public boolean isPresent() throws CardException {
         try {
             messageWriter.write(new Message(Message.MessageType.CARD_PRESENT));
+            logger.info("Sent CardPresent Message");
             Message message = messageReader.read();
             byte[] payload = message.getPayload();
-            return payload.length == 1 && payload[0] == 1;
+            boolean isPresent = payload.length == 1 && payload[0] == 1;
+            logger.info("Got CardPresent message: " + isPresent);
+            return isPresent;
         } catch (MessageException e) {
             throw new CardException(e);
         }

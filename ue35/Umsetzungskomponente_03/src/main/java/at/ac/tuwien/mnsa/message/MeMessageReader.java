@@ -4,38 +4,40 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class MessageReader {
+public class MeMessageReader {
 
     private final InputStream inputStream;
 
-    public MessageReader(InputStream inputStream) {
+
+    public MeMessageReader(InputStream inputStream) {
         this.inputStream = inputStream;
     }
 
-    public Message read() throws MessageException {
+    public MeMessage read() throws MeMessageException {
         try {
             short length;
             byte messageType;
             try {
                 byte[] header = new byte[4];
                 readFully(inputStream, header);
+
                 messageType = header[0];
                 byte nodeAddress = header[1];
                 if (messageType != nodeAddress) {
-                    throw new MessageException("Message type does not match node address.");
+                    throw new MeMessageException("Message type does not match node address.");
                 }
-                if (messageType == Message.MessageType.ERROR) {
-                    throw new MessageException("Got error message");
+                if (messageType == MeMessage.MessageType.ERROR) {
+                    throw new MeMessageException("Got error message");
                 }
                 length = toShort(header[2], header[3]);
             } catch (IOException e) {
-                throw new MessageException("Unable to read header", e);
+                throw new MeMessageException("Unable to read header", e);
             }
             byte[] payload = new byte[length];
             readFully(inputStream, payload);
-            return new Message(Message.MessageType.valueOf(messageType), payload);
+            return new MeMessage(MeMessage.MessageType.valueOf(messageType), payload);
         } catch (IOException e) {
-            throw new MessageException("Unable to read body", e);
+            throw new MeMessageException("Unable to read body", e);
         }
     }
 

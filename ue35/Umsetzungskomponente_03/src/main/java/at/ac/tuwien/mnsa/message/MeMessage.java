@@ -1,6 +1,6 @@
 package at.ac.tuwien.mnsa.message;
 
-public class Message {
+public class MeMessage {
     public static class MessageType {
         public static final byte TEST = (byte) 0x00;
         public static final byte APDU = (byte) 0x01;
@@ -16,7 +16,7 @@ public class Message {
             this.value = value;
         }
 
-        public static MessageType valueOf(byte b) throws MessageException {
+        public static MessageType valueOf(byte b) throws MeMessageException {
             if (b == TEST) {
                 return new MessageType(TEST);
             } else if (b == APDU) {
@@ -32,7 +32,7 @@ public class Message {
             } else if (b == ERROR) {
                 return new MessageType(ERROR);
             }
-            throw new MessageException("Unknown Type " + b);
+            throw new MeMessageException("Unknown Type " + b);
         }
     }
 
@@ -40,12 +40,12 @@ public class Message {
 
     private final byte[] payload;
 
-    public Message(MessageType type, byte[] payload) {
+    public MeMessage(MessageType type, byte[] payload) {
         this.type = type.value;
         this.payload = payload;
     }
 
-    public Message(MessageType type) {
+    public MeMessage(MessageType type) {
         this(type, new byte[]{});
     }
 
@@ -55,5 +55,21 @@ public class Message {
 
     public byte getType() {
         return type;
+    }
+
+    public String toString() {
+        return "MTY[" + type + "] LN[" + payload.length + "] PY[" + bytesToHex(payload) + "]";
+    }
+
+    private String bytesToHex(byte[] bytes) {
+        final char[] hexArray = "0123456789ABCDEF".toCharArray();
+        char[] hexChars = new char[bytes.length * 2];
+        int v;
+        for ( int j = 0; j < bytes.length; j++ ) {
+            v = bytes[j] & 0xFF;
+            hexChars[j * 2] = hexArray[v >>> 4];
+            hexChars[j * 2 + 1] = hexArray[v & 0x0F];
+        }
+        return new String(hexChars);
     }
 }

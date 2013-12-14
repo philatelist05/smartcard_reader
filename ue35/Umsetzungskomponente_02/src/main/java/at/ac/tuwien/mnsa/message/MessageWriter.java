@@ -20,6 +20,10 @@ public class MessageWriter {
             byte lnl = (byte) length;
             byte lnh = (byte) (length >> 8);
             outputStream.write(new byte[]{type.getByteValue(), nodeAddress, lnh, lnl});
+
+            if (payload.length > 0) {
+                outputStream.write(payload);
+            }
             outputStream.flush();
         } catch (IOException e) {
             throw new MessageException("Unable to write Message: " + String.format("%02x", payload), e);

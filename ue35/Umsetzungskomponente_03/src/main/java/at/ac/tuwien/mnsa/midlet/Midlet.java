@@ -22,6 +22,12 @@ public class Midlet extends MIDlet {
         Logger.addForm(form);
         logger = Logger.getLogger(getClass().getName());
 
+        initExitCommandListener();
+        initTargetListener();
+        initServerThread();
+    }
+
+    private void initExitCommandListener() {
         final Command exitCommand = new Command("Exit", Command.EXIT, 1);
         form.addCommand(exitCommand);
         form.setCommandListener(new CommandListener() {
@@ -32,15 +38,9 @@ public class Midlet extends MIDlet {
             }
         });
         logger.info("CommandListener registered");
-        try {
-            commServerThread = new CommServerThread("comm:USB1");
-            commServerThread.start();
-            logger.info("Main Thread started");
-        } catch (IOException e) {
-            logger.error("Unable to start main thread for serial communication", e);
-            destroyApp(true);
-        }
+    }
 
+    private void initTargetListener() {
         try {
             cardConnector = new CardConnector();
             discoveryManager = DiscoveryManager.getInstance();
@@ -48,6 +48,17 @@ public class Midlet extends MIDlet {
             logger.info("Targetlistener registered");
         } catch (ContactlessException e) {
             logger.error("Unable to register TargetListener", e);
+        }
+    }
+
+    private void initServerThread() throws MIDletStateChangeException {
+        try {
+            commServerThread = new CommServerThread("comm:USB1", cardConnector);
+            commServerThread.start();
+            logger.info("Main Thread started");
+        } catch (IOException e) {
+            logger.error("Unable to start main thread for serial communication", e);
+            destroyApp(true);
         }
     }
 

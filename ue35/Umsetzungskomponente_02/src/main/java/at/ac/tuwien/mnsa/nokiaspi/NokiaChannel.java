@@ -1,6 +1,7 @@
 package at.ac.tuwien.mnsa.nokiaspi;
 
 import at.ac.tuwien.mnsa.comm.SerialConnection;
+import org.apache.log4j.Logger;
 
 import javax.smartcardio.*;
 import java.io.IOException;
@@ -14,6 +15,7 @@ public class NokiaChannel extends CardChannel {
     private final NokiaCard card;
     private final int channel;
     private final SerialConnection connection;
+    private final Logger logger = Logger.getLogger(NokiaChannel.class);
 
     public NokiaChannel(NokiaCard card, int channel, SerialConnection connection) {
         this.card = card;
@@ -48,6 +50,7 @@ public class NokiaChannel extends CardChannel {
     public void close() throws CardException {
         try {
             connection.close();
+            logger.info("Successfully closed connection");
         } catch (IOException ex) {
             throw new CardException(ex);
         }
