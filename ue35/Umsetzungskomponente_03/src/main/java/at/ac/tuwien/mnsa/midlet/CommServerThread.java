@@ -111,7 +111,7 @@ public class CommServerThread extends Thread {
                     close();
                 } catch (IOException e1) {
                     logger.error("Unable to close connection", e1);
-                }finally {
+                } finally {
                     logger.error("Unable to send message " + responseMessage, e);
                 }
             }

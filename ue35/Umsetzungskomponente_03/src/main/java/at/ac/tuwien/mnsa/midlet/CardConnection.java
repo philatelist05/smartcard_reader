@@ -8,27 +8,27 @@ import java.io.IOException;
 
 public class CardConnection {
 
-	private final ISO14443Connection connection;
+    private final ISO14443Connection connection;
 
-	private CardConnection(ISO14443Connection connection) {
-		this.connection = connection;
-	}
+    private CardConnection(ISO14443Connection connection) {
+        this.connection = connection;
+    }
 
-	public static CardConnection open(TargetProperties targetProperties) throws IOException {
-		String url = targetProperties.getUrl(targetProperties.getConnectionNames()[0]);
-		ISO14443Connection connection = (ISO14443Connection) Connector.open(url);
-		return new CardConnection(connection);
-	}
+    public static CardConnection open(TargetProperties targetProperties) throws IOException {
+        String url = targetProperties.getUrl(targetProperties.getConnectionNames()[0]);
+        ISO14443Connection connection = (ISO14443Connection) Connector.open(url);
+        return new CardConnection(connection);
+    }
 
-	public byte[] exchangeData(byte[] request) throws IOException {
-		try {
-			return connection.exchangeData(request);
-		} catch (ContactlessException e) {
-			throw new IOException(e.toString());
-		}
-	}
+    public byte[] exchangeData(byte[] request) throws IOException {
+        try {
+            return connection.exchangeData(request);
+        } catch (ContactlessException e) {
+            throw new IOException(e.toString());
+        }
+    }
 
-	public void close() throws IOException {
-		connection.close();
-	}
+    public void close() throws IOException {
+        connection.close();
+    }
 }

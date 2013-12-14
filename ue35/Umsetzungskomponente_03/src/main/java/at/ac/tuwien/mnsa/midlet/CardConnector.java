@@ -9,19 +9,19 @@ public class CardConnector implements TargetListener {
     private TargetProperties targetProperty;
 
     public void targetDetected(TargetProperties[] targetProperties) {
-		for (int i = 0; i < targetProperties.length; i++) {
-			if (targetProperties[i].hasTargetType(TargetType.ISO14443_CARD)
-					&& targetProperties[i].getConnectionNames().length > 0) {
+        for (int i = 0; i < targetProperties.length; i++) {
+            if (targetProperties[i].hasTargetType(TargetType.ISO14443_CARD)
+                    && targetProperties[i].getConnectionNames().length > 0) {
                 targetProperty = targetProperties[i];
             }
-		}
-	}
+        }
+    }
 
-	public TargetProperties getLatestTargetProperties() {
-		return targetProperty;
-	}
+    public TargetProperties getLatestTargetProperties() {
+        return targetProperty;
+    }
 
-	public boolean isCardPresent() {
+    public boolean isCardPresent() {
         return targetProperty != null;
     }
 }
