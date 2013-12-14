@@ -41,13 +41,16 @@ public class CommServerThread extends Thread {
     }
 
     public void run() {
+        logger.info("Started mainLoop for Serverthread");
         while (isAlive) {
             try {
+                logger.info("Trying to read new message ...");
                 Message requestMessage = messageReader.read();
                 Message responseMessage = null;
                 byte messageType = requestMessage.getType();
 
                 if (messageType == Message.MessageType.ATR) {
+                    logger.info("Got ATR message");
                     if (cardConnector.isCardPresent()) {
                         TargetProperties targetProperties = cardConnector.getLatestTargetProperties();
                         String uid = targetProperties.getUid();
@@ -57,10 +60,12 @@ public class CommServerThread extends Thread {
                         responseMessage = new Message(new Message.MessageType(Message.MessageType.ERROR));
                     }
                 } else if (messageType == Message.MessageType.CARD_PRESENT) {
+                    logger.info("Got CARD_PRESENT message");
                     boolean cardPresent = cardConnector.isCardPresent();
                     byte[] payload = {(byte) (cardPresent ? 1 : 0)};
                     responseMessage = new Message(new Message.MessageType(Message.MessageType.CARD_PRESENT), payload);
                 } else if (messageType == Message.MessageType.CONNECT) {
+                    logger.info("Got CONNECT message");
                     try {
                         TargetProperties targetProperties = cardConnector.getLatestTargetProperties();
                         cardConnection = CardConnection.open(targetProperties);
@@ -70,6 +75,7 @@ public class CommServerThread extends Thread {
                         responseMessage = new Message(new Message.MessageType(Message.MessageType.ERROR));
                     }
                 } else if (messageType == Message.MessageType.CLOSE) {
+                    logger.info("Got CLOSE message");
                     try {
                         close();
                         responseMessage = new Message(new Message.MessageType(Message.MessageType.CLOSE));
@@ -77,8 +83,10 @@ public class CommServerThread extends Thread {
                         logger.error("Unable to close connection", e);
                     }
                 } else if (messageType == Message.MessageType.TEST) {
+                    logger.info("Got TEST message");
                     responseMessage = requestMessage;
                 } else if (messageType == Message.MessageType.APDU) {
+                    logger.info("Got APDU message");
                     if (cardConnector.isCardPresent() && cardConnection != null) {
                         try {
                             byte[] responsePayload = cardConnection.exchangeData(requestMessage.getPayload());
@@ -105,6 +113,7 @@ public class CommServerThread extends Thread {
     private void sendResponse(Message responseMessage) {
         if (responseMessage != null) {
             try {
+                logger.info("Sending response " + responseMessage.getType());
                 messageWriter.write(responseMessage);
             } catch (MessageException e) {
                 try {

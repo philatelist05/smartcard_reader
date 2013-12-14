@@ -31,9 +31,11 @@ public class Midlet extends MIDlet {
                 }
             }
         });
-
+        logger.info("CommandListener registered");
         try {
-            commServerThread = new CommServerThread("");
+            commServerThread = new CommServerThread("comm:USB1");
+            commServerThread.start();
+            logger.info("Main Thread started");
         } catch (IOException e) {
             logger.error("Unable to start main thread for serial communication", e);
             destroyApp(true);
@@ -43,6 +45,7 @@ public class Midlet extends MIDlet {
             cardConnector = new CardConnector();
             discoveryManager = DiscoveryManager.getInstance();
             discoveryManager.addTargetListener(cardConnector, TargetType.ISO14443_CARD);
+            logger.info("Targetlistener registered");
         } catch (ContactlessException e) {
             logger.error("Unable to register TargetListener", e);
         }
