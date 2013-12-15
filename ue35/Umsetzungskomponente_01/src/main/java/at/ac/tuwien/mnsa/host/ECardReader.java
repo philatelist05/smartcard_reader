@@ -109,25 +109,9 @@ public class ECardReader {
                 // Basic Channle holen (= ein virtueller Kanal zur CarteE)
                 CardChannel ch = card.getBasicChannel();
 
-                // Root Files selektieren
-                if (check9000andPrint(ch.transmit(SELECT_APDU))) {
-                    logger.info("SELECT OKAY");
-                } else {
-                    logger.error("SELECT NOT OKAY");
-                    return;
-                }
+                if (selectRootFiles(ch)) return;
 
-                // Reading machen
-                ResponseAPDU rp = ch.transmit(READ_BINARY_APDU);
-
-                if (check9000andPrint(rp)) {
-                    logger.info("READ BINARY OKAY");
-                    logger.info("Out: " + new String(rp.getBytes()));
-
-                } else {
-                    logger.error("READ BINARY NOT OKAY");
-                    return;
-                }
+                //if (readBinary(ch)) return;
 
                 break;
 
@@ -140,13 +124,35 @@ public class ECardReader {
         logger.info("exit");
     }
 
-    // wenn eine Reponse auf 0x9000 Endet, ist alles gut.
+    private static boolean selectRootFiles(CardChannel ch) throws CardException {
+        if (check9000andPrint(ch.transmit(SELECT_APDU))) {
+            logger.info("SELECT OKAY");
+        } else {
+            logger.error("SELECT NOT OKAY");
+            return true;
+        }
+        return false;
+    }
+
+    private static boolean readBinary(CardChannel ch) throws CardException {
+        ResponseAPDU rp = ch.transmit(READ_BINARY_APDU);
+
+        if (check9000andPrint(rp)) {
+            logger.info("READ BINARY OKAY");
+            logger.info("Out: " + new String(rp.getBytes()));
+
+        } else {
+            logger.error("READ BINARY NOT OKAY");
+            return true;
+        }
+        return false;
+    }
+
     public static boolean check9000(ResponseAPDU ra) {
         byte[] response = ra.getBytes();
         return (response[response.length - 2] == (byte) 0x90 && response[response.length - 1] == (byte) 0x00);
     }
 
-    // wenn eine Reponse auf 0x9000 Endet, ist alles gut.
     public static boolean check9000andPrint(ResponseAPDU ra) {
         byte[] response = ra.getBytes();
         logger.info(arrayToHex(response));
