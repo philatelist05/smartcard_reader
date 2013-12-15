@@ -31,13 +31,13 @@ public class MeMessageReader {
                 }
                 length = toShort(header[2], header[3]);
             } catch (IOException e) {
-                throw new MeMessageException("Unable to read header", e);
+                throw new MeMessageException("Unable to read header");
             }
             byte[] payload = new byte[length];
             readFully(inputStream, payload);
             return new MeMessage(MeMessage.MessageType.valueOf(messageType), payload);
         } catch (IOException e) {
-            throw new MeMessageException("Unable to read body", e);
+            throw new MeMessageException("Unable to read body");
         }
     }
 
@@ -45,7 +45,7 @@ public class MeMessageReader {
         int remaining = buffer.length;
         while (remaining > 0) {
             int location = buffer.length - remaining;
-            int count = inputStream.read(buffer, 0 + location, remaining);
+            int count = inputStream.read(buffer, location, remaining);
             if (count == -1) { // EOF
                 break;
             }

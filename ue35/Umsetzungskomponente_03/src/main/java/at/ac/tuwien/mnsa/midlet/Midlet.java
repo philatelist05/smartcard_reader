@@ -45,7 +45,7 @@ public class Midlet extends MIDlet {
             cardConnector = new CardConnector();
             discoveryManager = DiscoveryManager.getInstance();
             discoveryManager.addTargetListener(cardConnector, TargetType.ISO14443_CARD);
-            logger.info("Targetlistener registered");
+            logger.info("TargetListener registered");
         } catch (ContactlessException e) {
             logger.error("Unable to register TargetListener", e);
         }

@@ -29,7 +29,7 @@ public class MeMessageWriter {
             }
             outputStream.flush();
         } catch (IOException e) {
-            throw new MeMessageException("Unable to write Message: " + payload, e);
+            throw new MeMessageException("Unable to write Message: " + payload);
         }
     }
 }

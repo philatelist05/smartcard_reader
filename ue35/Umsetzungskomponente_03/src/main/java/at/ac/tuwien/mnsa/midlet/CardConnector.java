@@ -8,8 +8,9 @@ import java.io.IOException;
 public class CardConnector implements TargetListener {
 
     private final Logger logger;
-    private CardConnection cardConnection;
+    private CardConnection connection;
     private String uid;
+
 
     public CardConnector() {
         logger = Logger.getLogger(getClass().getName());
@@ -25,7 +26,7 @@ public class CardConnector implements TargetListener {
 
                 try {
                     uid = targetProperty.getUid();
-                    cardConnection = CardConnection.open(targetProperty);
+                    connection = CardConnection.open(targetProperty);
                 } catch (IOException e) {
                     logger.error("Unable to open card connection", e);
                 }
@@ -34,10 +35,10 @@ public class CardConnector implements TargetListener {
     }
 
     public CardConnection getCardConnection() throws IOException {
-        if (cardConnection == null) {
+        if (connection == null) {
             throw new IOException("No target has been detected");
         }
-        return cardConnection;
+        return connection;
     }
 
     public String getCardUid() throws IOException {
@@ -48,6 +49,6 @@ public class CardConnector implements TargetListener {
     }
 
     public boolean isCardPresent() {
-        return cardConnection != null && uid != null;
+        return connection != null && uid != null;
     }
 }

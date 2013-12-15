@@ -45,7 +45,7 @@ public class NokiaCard extends Card {
             messageWriter.write(new Message(Message.MessageType.ATR));
             logger.info("Sent ATR Request");
             Message message = messageReader.read();
-            logger.info("Got ATR Response: "+ Arrays.toString(message.getPayload()));
+            logger.info("Got ATR Response: "+ message.toString());
             return new ATR(message.getPayload());
         } catch (MessageException e) {
             logger.error("Can not get ATR message", e);
@@ -98,9 +98,9 @@ public class NokiaCard extends Card {
         try {
             byte[] requestData = capdu.getBytes();
             messageWriter.write(new Message(Message.MessageType.APDU, requestData));
-            logger.info("Sent APDU Request: "+ Arrays.toString(requestData));
+            logger.info("Sent APDU Request: "+ bytesToHex(requestData));
             Message message = messageReader.read();
-            logger.info("Got APDU Response: "+ Arrays.toString(message.getPayload()));
+            logger.info("Got APDU Response: "+ message.toString());
             return new ResponseAPDU(message.getPayload());
         } catch (MessageException e) {
             throw new CardException(e);
@@ -119,5 +119,17 @@ public class NokiaCard extends Card {
         } catch (MessageException e) {
             throw new CardException(e);
         }
+    }
+
+    private String bytesToHex(byte[] bytes) {
+        final char[] hexArray = "0123456789ABCDEF".toCharArray();
+        char[] hexChars = new char[bytes.length * 2];
+        int v;
+        for ( int j = 0; j < bytes.length; j++ ) {
+            v = bytes[j] & 0xFF;
+            hexChars[j * 2] = hexArray[v >>> 4];
+            hexChars[j * 2 + 1] = hexArray[v & 0x0F];
+        }
+        return new String(hexChars);
     }
 }

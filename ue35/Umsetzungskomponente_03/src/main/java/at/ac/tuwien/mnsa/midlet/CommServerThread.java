@@ -84,13 +84,13 @@ public class CommServerThread extends Thread {
                     logger.info("Got TEST message");
                     responseMeMessage = requestMeMessage;
                 } else if (messageType == MeMessage.MessageType.APDU) {
-                    logger.info("Got APDU message");
+                    logger.info("Got APDU message " + bytesToHex(requestMeMessage.getPayload()));
                     if (cardConnector.isCardPresent() && cardConnection != null) {
                         try {
                             byte[] responsePayload = cardConnection.exchangeData(requestMeMessage.getPayload());
                             responseMeMessage = new MeMessage(new MeMessage.MessageType(MeMessage.MessageType.APDU), responsePayload);
                         } catch (IOException e) {
-                            logger.error("Unable to exchange APDU message", e);
+                            logger.error("Unable to exchange APDU message (IOException)", e);
                             responseMeMessage = new MeMessage(new MeMessage.MessageType(MeMessage.MessageType.ERROR));
                         }
                     } else {
@@ -106,6 +106,18 @@ public class CommServerThread extends Thread {
                 logger.error("Unable to receive message", e);
             }
         }
+    }
+
+    private String bytesToHex(byte[] bytes) {
+         char[] hexArray = "0123456789ABCDEF".toCharArray();
+        char[] hexChars = new char[bytes.length * 2];
+        int v;
+        for ( int j = 0; j < bytes.length; j++ ) {
+            v = bytes[j] & 0xFF;
+            hexChars[j * 2] = hexArray[v >>> 4];
+            hexChars[j * 2 + 1] = hexArray[v & 0x0F];
+        }
+        return new String(hexChars);
     }
 
     private void sendResponse(MeMessage responseMeMessage) {

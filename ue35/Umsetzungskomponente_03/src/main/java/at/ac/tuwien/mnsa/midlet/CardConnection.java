@@ -1,5 +1,6 @@
 package at.ac.tuwien.mnsa.midlet;
 
+
 import javax.microedition.contactless.ContactlessException;
 import javax.microedition.contactless.TargetProperties;
 import javax.microedition.contactless.sc.ISO14443Connection;
@@ -8,27 +9,42 @@ import java.io.IOException;
 
 public class CardConnection {
 
-    private final ISO14443Connection connection;
+    private static ISO14443Connection connection = null;
+    private static final Logger logger = Logger.getLogger(CardConnection.class.getName());
 
-    private CardConnection(ISO14443Connection connection) {
-        this.connection = connection;
+    private CardConnection() {
     }
 
     public static CardConnection open(TargetProperties targetProperties) throws IOException {
         String url = targetProperties.getUrl(targetProperties.getConnectionNames()[0]);
-        ISO14443Connection connection = (ISO14443Connection) Connector.open(url);
-        return new CardConnection(connection);
+        if (connection != null) {
+            try {
+                connection.close();
+            } catch (IOException e) {
+                logger.error("Unable to close previous connection", e);
+            }
+        }
+        connection = (ISO14443Connection) Connector.open(url);
+        return new CardConnection();
     }
 
     public byte[] exchangeData(byte[] request) throws IOException {
+        if (connection == null) {
+            throw new IOException("Lost connection to card");
+        }
         try {
             return connection.exchangeData(request);
         } catch (ContactlessException e) {
-            throw new IOException(e.toString());
+                close();
+                throw new IOException(e.toString());
         }
     }
 
-    public void close() throws IOException {
-        connection.close();
+    public void close() {
+        try {
+            connection.close();
+        } catch (IOException e) {
+            logger.error("Unable to close card connection", e);
+        }
     }
 }

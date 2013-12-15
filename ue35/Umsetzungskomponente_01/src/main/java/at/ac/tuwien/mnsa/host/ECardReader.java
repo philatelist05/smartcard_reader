@@ -11,7 +11,8 @@ public class ECardReader {
 
     // Select APDU
     // private static byte[] SELECT = {(byte) 0x00, (byte) 0xA4, (byte) 0x00, (byte) 0x0C, (byte) 0x02, (byte) 0x3f, (byte) 0x00};
-    private static final byte[] SELECT = {(byte) 0x00, (byte) 0xA4, (byte) 0x04, (byte) 0x0C, (byte) 0x08, (byte) 0xD0, (byte) 0x40, (byte) 0x00, (byte) 0x00, (byte) 0x17, (byte) 0x01, (byte) 0x01, (byte) 0x01};
+    //private static final byte[] SELECT = {(byte) 0x00, (byte) 0xA4, (byte) 0x04, (byte) 0x0C, (byte) 0x08, (byte) 0xD0, (byte) 0x40, (byte) 0x00, (byte) 0x00, (byte) 0x17, (byte) 0x01, (byte) 0x01, (byte) 0x01};
+    private static byte[] SELECT = { (byte) 0x00, (byte) 0xA4, (byte) 0x04, (byte) 0x00};
 
     private static final CommandAPDU SELECT_APDU = new CommandAPDU(SELECT);
 
@@ -43,7 +44,7 @@ public class ECardReader {
         try {
             l = ct.list();
         } catch (CardException e) {
-            logger.error("Error listing Terminals: " + e.toString());
+            logger.error("Error listing Terminals: ", e);
         }
 
         // Liste ausgeben
@@ -81,7 +82,7 @@ public class ECardReader {
                     card = c.connect(T_1);
                     logger.info("Terminal connected mit T=1");
                 } catch (CardException e) {
-                    logger.error("Terminal NOT onnected via T=1 " + e.toString());
+                    logger.error("Terminal NOT onnected via T=1 ",e);
 
                     try {
 
@@ -89,7 +90,7 @@ public class ECardReader {
                         card = c.connect(T_0);
                         logger.info("Terminal connected mit T=0");
                     } catch (CardException ex) {
-                        logger.error("Terminal NOT onnected via T=0 " + ex.toString());
+                        logger.error("Terminal NOT onnected via T=0 ",ex);
                         return;
                     }
 
@@ -133,7 +134,7 @@ public class ECardReader {
             }// while
         }// try
         catch (CardException e) {
-            logger.info("Error isCardPresent()" + e.toString());
+            logger.info("Error isCardPresent()", e);
         }
 
         logger.info("exit");
