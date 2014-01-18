@@ -1,4 +1,4 @@
 mnsa_ws13
 =========
 
-A Smartcard Reader for (Mobile) Network Services and Applications  WS2013
+A Smartcard Reader for reading APDUs with a NFC compatible phone
